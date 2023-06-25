@@ -24,7 +24,7 @@ async fn save_log(log: axum::extract::Json<Log>) -> impl IntoResponse {
     let mut file = OpenOptions::new()
         .create(true)
         .append(true)
-        .open("C:\\Users\\win10\\Desktop\\logs.txt")
+        .open("C:\\Users\\win10\\Desktop\\tcs.log")
         .expect("Failed to open log file");
 
     file.write_all(log_line.as_bytes())
