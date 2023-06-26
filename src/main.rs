@@ -1,5 +1,6 @@
 use axum::{response::IntoResponse, routing::post, Router};
 use hyper::http::Method;
+use axum_client_ip::{InsecureClientIp, SecureClientIp, SecureClientIpSource};
 use serde::Deserialize;
 use std::{fs::OpenOptions, io::Write, net::SocketAddr};
 use tower_http::{
@@ -33,15 +34,25 @@ async fn save_log(log: axum::extract::Json<Log>) -> impl IntoResponse {
     "Log received and saved.".to_string().into_response()
 }
 
+
+async fn handler(insecure_ip: InsecureClientIp, secure_ip: SecureClientIp) -> String {
+    format!("{insecure_ip:?} {secure_ip:?}")
+}
+
 #[tokio::main]
 async fn main() {
+
+    async fn handler(insecure_ip: InsecureClientIp, secure_ip: SecureClientIp) -> String {
+        format!("{insecure_ip:?} {secure_ip:?}")
+    }
+    
     let cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST])
         .allow_origin(Any)
         .allow_headers(Any);
 
     let app = Router::new()
-        .route("/save_log", post(save_log))
+        .route("/save_log", post(save_log)).layer(SecureClientIpSource::ConnectInfo.into_extension())
         .layer(AddExtensionLayer::new(()))
         .layer(cors);
     // run it with hyper on localhost:3000
@@ -50,3 +61,4 @@ async fn main() {
         .await
         .unwrap();
 }
+
