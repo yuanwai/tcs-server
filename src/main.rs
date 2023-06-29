@@ -15,25 +15,6 @@ struct Log {
     log_content: String,
 }
 
-// async fn save_log(log: axum::extract::Json<Log>, insecure_ip: InsecureClientIp, secure_ip: SecureClientIp) -> impl IntoResponse {
-//     let log = log.0;
-
-//     // 构造日志行
-//     let log_line = format!("{} : {} | {}\n", log.time, log.client_ip, log.log_content);
-//     println!("============ run app...log:  {}", log_line);
-
-//     // 打开日志文件，将日志行写入
-//     let mut file = OpenOptions::new()
-//         .create(true)
-//         .append(true)
-//         .open("C:\\Users\\win10\\Desktop\\tcs.log")
-//         .expect("Failed to open log file");
-
-//     file.write_all(log_line.as_bytes())
-//         .expect("Failed to write to log file");
-
-//     "Log received and saved.".to_string().into_response()
-// }
 
 #[tokio::main]
 async fn main() {
@@ -44,16 +25,16 @@ async fn main() {
     ) -> String {
         let log = log.0;
 
-        let client_ip = format!("{insecure_ip:?}").to_string().s;
+        let client_ip = insecure_ip.0;
         // 构造日志行
-        let log_line = format!("{} : {} | {}\n", log.time, client_ip, log.log_content);
+        let log_line = format!("{} | {} | {}\n", log.time, client_ip, log.log_content);
         println!("============ run app...log:  {}", log_line);
 
         // 打开日志文件，将日志行写入
         let mut file = OpenOptions::new()
             .create(true)
             .append(true)
-            .open("C:\\Users\\win10\\Desktop\\tcs.log")
+            .open("/home/log/tcs.log")
             .expect("Failed to open log file");
 
         file.write_all(log_line.as_bytes())
